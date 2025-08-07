@@ -1,0 +1,218 @@
+{
+    "BuildID": "0593f8de-9245-4719-b25c-1b0d3a6134f3",
+    "Command": "project:build",
+    "ProjectID": "a2f9ded423cca9c4cb7b8871bbb451dc",
+    "ProjectStateHash": "c27d8b587bfa7a668d404ec9e2ff0b0d610ee665d744a88cad6913864ec16ca1",
+    "StageCompletedAt": 3,
+    "EarliestFatalError": 0,
+    "StartTime": 1754597711899,
+    "EndTime": 1754597740264,
+    "PlaygroundUserID": 26530,
+    "OperatingSystem": "win32",
+    "UnityPackageID": null,
+    "TargetPlatform": "develop",
+    "UnityVersion": "2021.3.45f1",
+    "LunaVersion": "6.3.0",
+    "LogCount": 8,
+    "Logs": [
+        {
+            "LogID": "779e00e3-fc2a-4a79-9d8c-0caa41f7b31e",
+            "Order": 5,
+            "Timestamp": 1754597740389,
+            "Stage": 3,
+            "ErrorType": 1,
+            "ErrorCode": "LP3006",
+            "Description": "You are not using the Luna API: Playable.InstallFullGame",
+            "Details": [
+                "You are not using the Luna API: Playable.InstallFullGame. Some ad networks require these calls. Please add these calls to ensure your playable works on all ad networks. Check documentation for more information."
+            ],
+            "DescriptionValues": [
+                "Playable",
+                "InstallFullGame"
+            ],
+            "DetailsValues": [
+                "Playable",
+                "InstallFullGame"
+            ],
+            "LogCount": 1,
+            "LinePosition": null,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "116c98b0-6601-42ae-a548-1fe9fed532bf",
+            "Order": 5,
+            "Timestamp": 1754597740389,
+            "Stage": 3,
+            "ErrorType": 1,
+            "ErrorCode": "LP3015",
+            "Description": "You are not the Game Ended API: LifeCycle.GameEnded",
+            "Details": [
+                "You are not using the Game Ended API: LifeCycle.GameEnded. Some ad networks require this call, please add the event to avoid the ad being rejected."
+            ],
+            "DescriptionValues": [
+                "LifeCycle",
+                "GameEnded"
+            ],
+            "DetailsValues": [
+                "LifeCycle",
+                "GameEnded"
+            ],
+            "LogCount": 1,
+            "LinePosition": null,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "1b4a56bb-f9f3-4a72-b2b4-2913a30f1ea0",
+            "Order": 5,
+            "Timestamp": 1754597740389,
+            "Stage": 3,
+            "ErrorType": 3,
+            "ErrorCode": "LP3007",
+            "Description": "You are not using any custom events",
+            "Details": [
+                "You are not using any custom events. It is recommended to use custom events to have a better understanding of the playable."
+            ],
+            "DescriptionValues": [
+                ""
+            ],
+            "DetailsValues": [
+                ""
+            ],
+            "LogCount": 1,
+            "LinePosition": null,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "cfe6c771-443f-4587-8760-02fbc99366a9",
+            "Order": 5,
+            "Timestamp": 1754597740389,
+            "Stage": 3,
+            "ErrorType": 3,
+            "ErrorCode": "LP3011",
+            "Description": "You are not using any LunaPlaygroundFields attributes.",
+            "Details": [
+                "You are not using any LunaPlaygroundFields attributes, it allows you to configure your playable to different concepts to find the best variation, which can drastically improve playable performance on all ad networks."
+            ],
+            "DescriptionValues": null,
+            "DetailsValues": null,
+            "LogCount": 1,
+            "LinePosition": null,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "b524b71c-7d77-4d00-929f-c02e9cc490b4",
+            "Order": 0,
+            "Timestamp": 1754597724604,
+            "Stage": 1,
+            "ErrorType": 2,
+            "ErrorCode": "LP1022",
+            "Description": "Extensive use of shader variants",
+            "Details": [
+                "Extensive usage of shader variants negatively affects playable startup time. Please consider them to be less than 20 (24 found). Check Runtime analysis -> shader tab to see used shaders."
+            ],
+            "DescriptionValues": [],
+            "DetailsValues": [
+                "20",
+                "24"
+            ],
+            "LogCount": 1,
+            "LinePosition": 0,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "92da7507-c018-4862-87f2-35e3a8c09752",
+            "Order": 1,
+            "Timestamp": 1754597724604,
+            "Stage": 1,
+            "ErrorType": 3,
+            "ErrorCode": "LP1002",
+            "Description": "Repeat wrap mode used on a texture with non power-of-two dimensions, this might not be rendered correctly.",
+            "Details": [
+                "Repeat wrap mode used on 'LiberationSans SDF Atlas' texture at 'Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset' with non power-of-two dimensions, this might not be rendered correctly."
+            ],
+            "DescriptionValues": [],
+            "DetailsValues": [
+                "LiberationSans SDF Atlas",
+                "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset"
+            ],
+            "LogCount": 1,
+            "LinePosition": 0,
+            "FilePath": "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "26226bf9-f2f8-4e3e-a3b4-7ea69caf0175",
+            "Order": 2,
+            "Timestamp": 1754597724604,
+            "Stage": 1,
+            "ErrorType": 2,
+            "ErrorCode": "LP1010",
+            "Description": "Looks like a collider was scaled, this might affect performance.",
+            "Details": [
+                "Quad",
+                "dunkTriggerBottom",
+                "dunkTriggerTop",
+                "CubeBottom",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube"
+            ],
+            "DescriptionValues": [],
+            "DetailsValues": [],
+            "LogCount": 13,
+            "LinePosition": 0,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "fd8867dc-f757-452d-8952-b4d8167d7fc0",
+            "Order": 3,
+            "Timestamp": 1754597724604,
+            "Stage": 1,
+            "ErrorType": 3,
+            "ErrorCode": "LP1008",
+            "Description": "There are missing components on Camera.",
+            "Details": [
+                "There are missing components on Camera."
+            ],
+            "DescriptionValues": [
+                "Camera"
+            ],
+            "DetailsValues": [
+                "Camera",
+                "Camera"
+            ],
+            "LogCount": 1,
+            "LinePosition": 0,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        }
+    ]
+}

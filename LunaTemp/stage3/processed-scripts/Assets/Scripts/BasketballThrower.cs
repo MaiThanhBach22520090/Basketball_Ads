@@ -11,10 +11,10 @@ public class BasketballThrower : MonoBehaviour
     [Header("Trajectory Control (Tune these!)")]
     public float minApexHeightOffset = 2f;
     public float maxApexHeightOffset = 5f;
-    public float horizontalAimScale = 0.005f;
+    public float horizontalAimScale = 0.05f;
 
     [Header("Move/Flick Detection")]
-    public float dragSpeedThreshold = 100f;
+    public float dragSpeedThreshold = 1000f;
     public float moveSpeed = 50f;
     public float dragSpeedCheckInterval = 0.1f; // How often to check drag speed for flick detection
 

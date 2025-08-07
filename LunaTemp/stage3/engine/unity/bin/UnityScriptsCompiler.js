@@ -1,6 +1,6 @@
-if ( TRACE ) { TRACE( JSON.parse( '["Ball#init","Ball#OnTriggerEnter","Ball#OnCollisionEnter","Ball#AddNormalScore","Ball#AddPerfectScore","Ball#ResetState","BasketballThrower#init","BasketballThrower#Start","BasketballThrower#Update","BasketballThrower#OnClickStarted","BasketballThrower#OnClickCanceled","BasketballThrower#CalculateLaunchVelocity","BasketballThrower#ThrowBall","DunkTrigger#Start","DunkTrigger#Update","Floor#Start","Floor#Update","Ring#Start","Ring#Update","ScoreManager#init","ScoreManager#TotalScore#get","ScoreManager#init","ScoreManager#Awake","ScoreManager#Start","ScoreManager#AddNormalDunkScore","ScoreManager#AddPerfectDunkScore","ScoreManager#ResetCurrentScore"]' ) ); }
+if ( TRACE ) { TRACE( JSON.parse( '["Ball#init","Ball#OnTriggerEnter","Ball#OnCollisionEnter","Ball#AddNormalScore","Ball#AddPerfectScore","Ball#ResetState","BallManager#init","BallManager#Start","BallManager#Update","BallManager#HandleInput","BallManager#NormalizeAngle","BallManager#UpdateCurrentBall","BallManager#SetMaterial","BasketballThrower#init","BasketballThrower#Start","BasketballThrower#Update","BasketballThrower#OnClickStarted","BasketballThrower#OnClickCanceled","BasketballThrower#CalculateLaunchVelocity","BasketballThrower#ThrowBall","DunkTrigger#Start","DunkTrigger#Update","Floor#Start","Floor#Update","Ring#Start","Ring#Update","ScoreManager#init","ScoreManager#TotalScore#get","ScoreManager#init","ScoreManager#Awake","ScoreManager#Start","ScoreManager#AddNormalDunkScore","ScoreManager#AddPerfectDunkScore","ScoreManager#ResetCurrentScore","UIManager#Start","UIManager#ShowBallSellectMenu","UIManager#HideBallSelectMenu"]' ) ); }
 /**
- * @version 1.0.9351.948
+ * @version 1.0.9351.5866
  * @copyright anton
  * @compiler Bridge.NET 17.9.42-luna
  */
@@ -93,6 +93,184 @@ if ( TRACE ) { TRACE( "Ball#ResetState", this ); }
     });
     /*Ball end.*/
 
+    /*BallManager start.*/
+    Bridge.define("BallManager", {
+        inherits: [UnityEngine.MonoBehaviour],
+        fields: {
+            BallListPivot: null,
+            BallList: null,
+            radius: 0,
+            scrollSensitivity: 0,
+            inertia: 0,
+            snapSmoothTime: 0,
+            highlightor: null,
+            playBalls: null,
+            angle: 0,
+            velocity: 0,
+            snapVelocity: 0,
+            dragging: false,
+            lastInputPos: null,
+            currentBall: null
+        },
+        ctors: {
+            init: function () {
+if ( TRACE ) { TRACE( "BallManager#init", this ); }
+
+                this.lastInputPos = new UnityEngine.Vector2();
+                this.BallList = new (System.Collections.Generic.List$1(UnityEngine.Transform)).ctor();
+                this.radius = 5.0;
+                this.scrollSensitivity = 0.2;
+                this.inertia = 5.0;
+                this.snapSmoothTime = 0.2;
+                this.angle = 0.0;
+                this.velocity = 0.0;
+                this.snapVelocity = 0.0;
+                this.dragging = false;
+            }
+        },
+        methods: {
+            /*BallManager.Start start.*/
+            Start: function () {
+if ( TRACE ) { TRACE( "BallManager#Start", this ); }
+
+                if (UnityEngine.Object.op_Implicit(this.highlightor)) {
+                    this.highlightor.SetActive(false);
+                }
+            },
+            /*BallManager.Start end.*/
+
+            /*BallManager.Update start.*/
+            Update: function () {
+if ( TRACE ) { TRACE( "BallManager#Update", this ); }
+
+                this.HandleInput();
+
+                if (!this.dragging) {
+                    if (Math.abs(this.velocity) > 1.0) {
+                        // Apply momentum
+                        this.angle -= this.velocity * UnityEngine.Time.deltaTime;
+                        this.velocity = pc.math.lerp(this.velocity, 0.0, UnityEngine.Time.deltaTime * this.inertia);
+
+                        if (UnityEngine.Object.op_Implicit(this.highlightor)) {
+                            this.highlightor.SetActive(false);
+                        }
+                    } else {
+                        // Snap to nearest ball smoothly
+                        var segmentAngle = 360.0 / this.BallList.Count;
+                        var nearestIndex = Math.round(this.angle / segmentAngle);
+                        var targetAngle = nearestIndex * segmentAngle;
+                        this.angle = UnityEngine.Mathf.SmoothDampAngle(this.angle, targetAngle, Bridge.ref(this, "snapVelocity"), this.snapSmoothTime);
+
+                        // Show highlight
+                        if (UnityEngine.Object.op_Implicit(this.highlightor) && !this.highlightor.activeSelf) {
+                            this.highlightor.SetActive(true);
+                            this.highlightor.GetComponent(UnityEngine.Animation).Play$1("Select HighLight");
+                        }
+
+                        this.UpdateCurrentBall();
+                    }
+                }
+
+                this.angle = this.NormalizeAngle(this.angle);
+                this.BallListPivot.localRotation = new pc.Quat().setFromEulerAngles_Unity( 0.0, this.angle, 0.0 );
+            },
+            /*BallManager.Update end.*/
+
+            /*BallManager.HandleInput start.*/
+            HandleInput: function () {
+if ( TRACE ) { TRACE( "BallManager#HandleInput", this ); }
+
+                if (UnityEngine.Input.GetMouseButton(0)) {
+                    var current = UnityEngine.Vector2.FromVector3(UnityEngine.Input.mousePosition.$clone());
+
+                    if (!this.dragging) {
+                        this.lastInputPos = current.$clone();
+                        this.dragging = true;
+                        this.velocity = 0.0;
+                    }
+
+                    var deltaX = current.x - this.lastInputPos.x;
+                    this.angle -= deltaX * this.scrollSensitivity;
+                    this.velocity = deltaX * this.scrollSensitivity / UnityEngine.Time.deltaTime;
+                    this.lastInputPos = current.$clone();
+                } else {
+                    this.dragging = false;
+                }
+            },
+            /*BallManager.HandleInput end.*/
+
+            /*BallManager.NormalizeAngle start.*/
+            NormalizeAngle: function (a) {
+if ( TRACE ) { TRACE( "BallManager#NormalizeAngle", this ); }
+
+                a %= 360.0;
+                if (a < 0.0) {
+                    a += 360.0;
+                }
+                return a;
+            },
+            /*BallManager.NormalizeAngle end.*/
+
+            /*BallManager.UpdateCurrentBall start.*/
+            UpdateCurrentBall: function () {
+if ( TRACE ) { TRACE( "BallManager#UpdateCurrentBall", this ); }
+
+                var $t;
+                var minDistance = 3.40282347E+38;
+                var closest = null;
+
+                $t = Bridge.getEnumerator(this.BallList);
+                try {
+                    while ($t.moveNext()) {
+                        var ball = $t.Current;
+                        var dist = pc.Vec3.distance( ball.position, this.highlightor.transform.position );
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            closest = ball.gameObject;
+                        }
+                    }
+                } finally {
+                    if (Bridge.is($t, System.IDisposable)) {
+                        $t.System$IDisposable$Dispose();
+                    }
+                }
+
+                if (UnityEngine.GameObject.op_Inequality(closest, null) && UnityEngine.GameObject.op_Inequality(this.currentBall, closest)) {
+                    this.currentBall = closest;
+                }
+            },
+            /*BallManager.UpdateCurrentBall end.*/
+
+            /*BallManager.SetMaterial start.*/
+            SetMaterial: function () {
+if ( TRACE ) { TRACE( "BallManager#SetMaterial", this ); }
+
+                var $t;
+                if (UnityEngine.GameObject.op_Equality(this.currentBall, null)) {
+                    return;
+                }
+
+                var mat = this.currentBall.GetComponent(UnityEngine.Renderer).material;
+
+                $t = Bridge.getEnumerator(this.playBalls);
+                try {
+                    while ($t.moveNext()) {
+                        var obj = $t.Current;
+                        obj.GetComponent(UnityEngine.Renderer).material = mat;
+                    }
+                } finally {
+                    if (Bridge.is($t, System.IDisposable)) {
+                        $t.System$IDisposable$Dispose();
+                    }
+                }
+            },
+            /*BallManager.SetMaterial end.*/
+
+
+        }
+    });
+    /*BallManager end.*/
+
     /*BasketballThrower start.*/
     Bridge.define("BasketballThrower", {
         inherits: [UnityEngine.MonoBehaviour],
@@ -124,8 +302,8 @@ if ( TRACE ) { TRACE( "BasketballThrower#init", this ); }
                 this.throwForceMultiplier = 1.0;
                 this.minApexHeightOffset = 2.0;
                 this.maxApexHeightOffset = 5.0;
-                this.horizontalAimScale = 0.005;
-                this.dragSpeedThreshold = 100.0;
+                this.horizontalAimScale = 0.05;
+                this.dragSpeedThreshold = 1000.0;
                 this.moveSpeed = 50.0;
                 this.dragSpeedCheckInterval = 0.1;
                 this.isDragging = false;
@@ -553,13 +731,61 @@ if ( TRACE ) { TRACE( "ScoreManager#ResetCurrentScore", this ); }
     });
     /*ScoreManager end.*/
 
+    /*UIManager start.*/
+    Bridge.define("UIManager", {
+        inherits: [UnityEngine.MonoBehaviour],
+        fields: {
+            BallSelectMenu: null,
+            BallSelectButton: null
+        },
+        methods: {
+            /*UIManager.Start start.*/
+            Start: function () {
+if ( TRACE ) { TRACE( "UIManager#Start", this ); }
+
+                if (UnityEngine.GameObject.op_Inequality(this.BallSelectMenu, null)) {
+                    this.BallSelectMenu.SetActive(false);
+                }
+                if (UnityEngine.GameObject.op_Inequality(this.BallSelectButton, null)) {
+                    this.BallSelectButton.SetActive(true);
+                }
+            },
+            /*UIManager.Start end.*/
+
+            /*UIManager.ShowBallSellectMenu start.*/
+            ShowBallSellectMenu: function () {
+if ( TRACE ) { TRACE( "UIManager#ShowBallSellectMenu", this ); }
+
+                this.BallSelectMenu.SetActive(true);
+                this.BallSelectButton.SetActive(false);
+            },
+            /*UIManager.ShowBallSellectMenu end.*/
+
+            /*UIManager.HideBallSelectMenu start.*/
+            HideBallSelectMenu: function () {
+if ( TRACE ) { TRACE( "UIManager#HideBallSelectMenu", this ); }
+
+                this.BallSelectMenu.SetActive(false);
+                this.BallSelectButton.SetActive(true);
+            },
+            /*UIManager.HideBallSelectMenu end.*/
+
+
+        }
+    });
+    /*UIManager end.*/
+
     if ( MODULE_reflection ) {
     var $m = Bridge.setMetadata,
-        $n = ["System","UnityEngine","TMPro"];
+        $n = ["System","UnityEngine","System.Collections.Generic","TMPro"];
 
     /*Ball start.*/
     $m("Ball", function () { return {"att":1048577,"a":2,"m":[{"a":2,"isSynthetic":true,"n":".ctor","t":1,"sn":"ctor"},{"a":2,"n":"AddNormalScore","t":8,"sn":"AddNormalScore","rt":$n[0].Void},{"a":2,"n":"AddPerfectScore","t":8,"sn":"AddPerfectScore","rt":$n[0].Void},{"a":1,"n":"OnCollisionEnter","t":8,"pi":[{"n":"collision","pt":$n[1].Collision,"ps":0}],"sn":"OnCollisionEnter","rt":$n[0].Void,"p":[$n[1].Collision]},{"a":1,"n":"OnTriggerEnter","t":8,"pi":[{"n":"other","pt":$n[1].Collider,"ps":0}],"sn":"OnTriggerEnter","rt":$n[0].Void,"p":[$n[1].Collider]},{"a":2,"n":"ResetState","t":8,"sn":"ResetState","rt":$n[0].Void},{"a":1,"n":"isPerfectDunk","t":4,"rt":$n[0].Boolean,"sn":"isPerfectDunk","box":function ($v) { return Bridge.box($v, System.Boolean, System.Boolean.toString);}},{"a":1,"n":"triggerCount","t":4,"rt":$n[0].Int32,"sn":"triggerCount","box":function ($v) { return Bridge.box($v, System.Int32);}}]}; }, $n);
     /*Ball end.*/
+
+    /*BallManager start.*/
+    $m("BallManager", function () { return {"att":1048577,"a":2,"m":[{"a":2,"isSynthetic":true,"n":".ctor","t":1,"sn":"ctor"},{"a":1,"n":"HandleInput","t":8,"sn":"HandleInput","rt":$n[0].Void},{"a":1,"n":"NormalizeAngle","t":8,"pi":[{"n":"a","pt":$n[0].Single,"ps":0}],"sn":"NormalizeAngle","rt":$n[0].Single,"p":[$n[0].Single],"box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":2,"n":"SetMaterial","t":8,"sn":"SetMaterial","rt":$n[0].Void},{"a":1,"n":"Start","t":8,"sn":"Start","rt":$n[0].Void},{"a":1,"n":"Update","t":8,"sn":"Update","rt":$n[0].Void},{"a":1,"n":"UpdateCurrentBall","t":8,"sn":"UpdateCurrentBall","rt":$n[0].Void},{"a":2,"n":"BallList","t":4,"rt":$n[2].List$1(UnityEngine.Transform),"sn":"BallList"},{"at":[new UnityEngine.HeaderAttribute("Ball Setup")],"a":2,"n":"BallListPivot","t":4,"rt":$n[1].Transform,"sn":"BallListPivot"},{"a":1,"n":"angle","t":4,"rt":$n[0].Single,"sn":"angle","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":1,"n":"currentBall","t":4,"rt":$n[1].GameObject,"sn":"currentBall"},{"a":1,"n":"dragging","t":4,"rt":$n[0].Boolean,"sn":"dragging","box":function ($v) { return Bridge.box($v, System.Boolean, System.Boolean.toString);}},{"at":[new UnityEngine.HeaderAttribute("Visuals")],"a":2,"n":"highlightor","t":4,"rt":$n[1].GameObject,"sn":"highlightor"},{"a":2,"n":"inertia","t":4,"rt":$n[0].Single,"sn":"inertia","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":1,"n":"lastInputPos","t":4,"rt":$n[1].Vector2,"sn":"lastInputPos"},{"a":2,"n":"playBalls","t":4,"rt":$n[2].List$1(UnityEngine.GameObject),"sn":"playBalls"},{"a":2,"n":"radius","t":4,"rt":$n[0].Single,"sn":"radius","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"at":[new UnityEngine.HeaderAttribute("Scroll Settings")],"a":2,"n":"scrollSensitivity","t":4,"rt":$n[0].Single,"sn":"scrollSensitivity","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":2,"n":"snapSmoothTime","t":4,"rt":$n[0].Single,"sn":"snapSmoothTime","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":1,"n":"snapVelocity","t":4,"rt":$n[0].Single,"sn":"snapVelocity","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":1,"n":"velocity","t":4,"rt":$n[0].Single,"sn":"velocity","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}}]}; }, $n);
+    /*BallManager end.*/
 
     /*BasketballThrower start.*/
     $m("BasketballThrower", function () { return {"att":1048577,"a":2,"m":[{"a":2,"isSynthetic":true,"n":".ctor","t":1,"sn":"ctor"},{"a":1,"n":"CalculateLaunchVelocity","t":8,"pi":[{"n":"startPoint","pt":$n[1].Vector3,"ps":0},{"n":"targetPoint","pt":$n[1].Vector3,"ps":1},{"n":"peakHeight","pt":$n[0].Single,"ps":2}],"sn":"CalculateLaunchVelocity","rt":$n[1].Vector3,"p":[$n[1].Vector3,$n[1].Vector3,$n[0].Single]},{"a":1,"n":"OnClickCanceled","t":8,"sn":"OnClickCanceled","rt":$n[0].Void},{"a":1,"n":"OnClickStarted","t":8,"sn":"OnClickStarted","rt":$n[0].Void},{"a":1,"n":"Start","t":8,"sn":"Start","rt":$n[0].Void},{"a":1,"n":"ThrowBall","t":8,"pi":[{"n":"initialVelocity","pt":$n[1].Vector3,"ps":0}],"sn":"ThrowBall","rt":$n[0].Void,"p":[$n[1].Vector3]},{"a":1,"n":"Update","t":8,"sn":"Update","rt":$n[0].Void},{"a":1,"n":"activeBasketball","t":4,"rt":$n[1].GameObject,"sn":"activeBasketball"},{"a":2,"n":"dragSpeedCheckInterval","t":4,"rt":$n[0].Single,"sn":"dragSpeedCheckInterval","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":1,"n":"dragSpeedCheckTimer","t":4,"rt":$n[0].Single,"sn":"dragSpeedCheckTimer","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"at":[new UnityEngine.HeaderAttribute("Move/Flick Detection")],"a":2,"n":"dragSpeedThreshold","t":4,"rt":$n[0].Single,"sn":"dragSpeedThreshold","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":1,"n":"dragStartTime","t":4,"rt":$n[0].Single,"sn":"dragStartTime","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"at":[new UnityEngine.HeaderAttribute("Throwing Settings")],"a":2,"n":"hoopTargetPoint","t":4,"rt":$n[1].Transform,"sn":"hoopTargetPoint"},{"a":2,"n":"horizontalAimScale","t":4,"rt":$n[0].Single,"sn":"horizontalAimScale","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":1,"n":"initialBallScreenOffset","t":4,"rt":$n[1].Vector3,"sn":"initialBallScreenOffset"},{"a":1,"n":"isDragging","t":4,"rt":$n[0].Boolean,"sn":"isDragging","box":function ($v) { return Bridge.box($v, System.Boolean, System.Boolean.toString);}},{"a":1,"n":"isFlicking","t":4,"rt":$n[0].Boolean,"sn":"isFlicking","box":function ($v) { return Bridge.box($v, System.Boolean, System.Boolean.toString);}},{"a":1,"n":"lastDragSpeedCheckPos","t":4,"rt":$n[1].Vector2,"sn":"lastDragSpeedCheckPos"},{"a":2,"n":"maxApexHeightOffset","t":4,"rt":$n[0].Single,"sn":"maxApexHeightOffset","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"at":[new UnityEngine.HeaderAttribute("Trajectory Control (Tune these!)")],"a":2,"n":"minApexHeightOffset","t":4,"rt":$n[0].Single,"sn":"minApexHeightOffset","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":2,"n":"moveSpeed","t":4,"rt":$n[0].Single,"sn":"moveSpeed","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":2,"n":"throwForceMultiplier","t":4,"rt":$n[0].Single,"sn":"throwForceMultiplier","box":function ($v) { return Bridge.box($v, System.Single, System.Single.format, System.Single.getHashCode);}},{"a":1,"n":"touchStartScreenPos","t":4,"rt":$n[1].Vector2,"sn":"touchStartScreenPos"}]}; }, $n);
@@ -578,8 +804,12 @@ if ( TRACE ) { TRACE( "ScoreManager#ResetCurrentScore", this ); }
     /*Ring end.*/
 
     /*ScoreManager start.*/
-    $m("ScoreManager", function () { return {"att":1048577,"a":2,"m":[{"a":2,"isSynthetic":true,"n":".ctor","t":1,"sn":"ctor"},{"a":2,"n":"AddNormalDunkScore","t":8,"sn":"AddNormalDunkScore","rt":$n[0].Void},{"a":2,"n":"AddPerfectDunkScore","t":8,"sn":"AddPerfectDunkScore","rt":$n[0].Void},{"a":1,"n":"Awake","t":8,"sn":"Awake","rt":$n[0].Void},{"a":2,"n":"ResetCurrentScore","t":8,"sn":"ResetCurrentScore","rt":$n[0].Void},{"a":1,"n":"Start","t":8,"sn":"Start","rt":$n[0].Void},{"a":2,"n":"Instance","is":true,"t":16,"rt":ScoreManager,"g":{"a":2,"n":"get_Instance","t":8,"rt":ScoreManager,"fg":"Instance","is":true},"s":{"a":1,"n":"set_Instance","t":8,"p":[ScoreManager],"rt":$n[0].Void,"fs":"Instance","is":true},"fn":"Instance"},{"a":2,"n":"NormalScore","t":16,"rt":$n[0].Int32,"g":{"a":2,"n":"get_NormalScore","t":8,"rt":$n[0].Int32,"fg":"NormalScore","box":function ($v) { return Bridge.box($v, System.Int32);}},"s":{"a":1,"n":"set_NormalScore","t":8,"p":[$n[0].Int32],"rt":$n[0].Void,"fs":"NormalScore"},"fn":"NormalScore"},{"a":2,"n":"PerfectScore","t":16,"rt":$n[0].Int32,"g":{"a":2,"n":"get_PerfectScore","t":8,"rt":$n[0].Int32,"fg":"PerfectScore","box":function ($v) { return Bridge.box($v, System.Int32);}},"s":{"a":1,"n":"set_PerfectScore","t":8,"p":[$n[0].Int32],"rt":$n[0].Void,"fs":"PerfectScore"},"fn":"PerfectScore"},{"a":2,"n":"TotalScore","t":16,"rt":$n[0].Int32,"g":{"a":2,"n":"get_TotalScore","t":8,"rt":$n[0].Int32,"fg":"TotalScore","box":function ($v) { return Bridge.box($v, System.Int32);}},"fn":"TotalScore"},{"a":1,"n":"PERFECT_DUNK_NOTIFICATION","is":true,"t":4,"rt":$n[0].String,"sn":"PERFECT_DUNK_NOTIFICATION"},{"at":[new UnityEngine.HeaderAttribute("Dunk Point Values")],"a":2,"n":"normalDunkPoints","t":4,"rt":$n[0].Int32,"sn":"normalDunkPoints","box":function ($v) { return Bridge.box($v, System.Int32);}},{"a":2,"n":"normalScoreText","t":4,"rt":$n[2].TextMeshPro,"sn":"normalScoreText"},{"a":2,"n":"perfectDunkAnimation","t":4,"rt":$n[1].Animation,"sn":"perfectDunkAnimation"},{"a":2,"n":"perfectDunkParticle","t":4,"rt":$n[1].ParticleSystem,"sn":"perfectDunkParticle"},{"a":2,"n":"perfectDunkPoints","t":4,"rt":$n[0].Int32,"sn":"perfectDunkPoints","box":function ($v) { return Bridge.box($v, System.Int32);}},{"a":2,"n":"perfectScoreText","t":4,"rt":$n[2].TextMeshPro,"sn":"perfectScoreText"},{"a":2,"n":"totalScoreText","t":4,"rt":$n[2].TextMeshPro,"sn":"totalScoreText"},{"a":2,"n":"OnTotalScoreChanged","t":2,"ad":{"a":2,"n":"add_OnTotalScoreChanged","t":8,"pi":[{"n":"value","pt":Function,"ps":0}],"sn":"addOnTotalScoreChanged","rt":$n[0].Void,"p":[Function]},"r":{"a":2,"n":"remove_OnTotalScoreChanged","t":8,"pi":[{"n":"value","pt":Function,"ps":0}],"sn":"removeOnTotalScoreChanged","rt":$n[0].Void,"p":[Function]}},{"a":1,"backing":true,"n":"<Instance>k__BackingField","is":true,"t":4,"rt":ScoreManager,"sn":"Instance"},{"a":1,"backing":true,"n":"<NormalScore>k__BackingField","t":4,"rt":$n[0].Int32,"sn":"NormalScore","box":function ($v) { return Bridge.box($v, System.Int32);}},{"a":1,"backing":true,"n":"<PerfectScore>k__BackingField","t":4,"rt":$n[0].Int32,"sn":"PerfectScore","box":function ($v) { return Bridge.box($v, System.Int32);}}]}; }, $n);
+    $m("ScoreManager", function () { return {"att":1048577,"a":2,"m":[{"a":2,"isSynthetic":true,"n":".ctor","t":1,"sn":"ctor"},{"a":2,"n":"AddNormalDunkScore","t":8,"sn":"AddNormalDunkScore","rt":$n[0].Void},{"a":2,"n":"AddPerfectDunkScore","t":8,"sn":"AddPerfectDunkScore","rt":$n[0].Void},{"a":1,"n":"Awake","t":8,"sn":"Awake","rt":$n[0].Void},{"a":2,"n":"ResetCurrentScore","t":8,"sn":"ResetCurrentScore","rt":$n[0].Void},{"a":1,"n":"Start","t":8,"sn":"Start","rt":$n[0].Void},{"a":2,"n":"Instance","is":true,"t":16,"rt":ScoreManager,"g":{"a":2,"n":"get_Instance","t":8,"rt":ScoreManager,"fg":"Instance","is":true},"s":{"a":1,"n":"set_Instance","t":8,"p":[ScoreManager],"rt":$n[0].Void,"fs":"Instance","is":true},"fn":"Instance"},{"a":2,"n":"NormalScore","t":16,"rt":$n[0].Int32,"g":{"a":2,"n":"get_NormalScore","t":8,"rt":$n[0].Int32,"fg":"NormalScore","box":function ($v) { return Bridge.box($v, System.Int32);}},"s":{"a":1,"n":"set_NormalScore","t":8,"p":[$n[0].Int32],"rt":$n[0].Void,"fs":"NormalScore"},"fn":"NormalScore"},{"a":2,"n":"PerfectScore","t":16,"rt":$n[0].Int32,"g":{"a":2,"n":"get_PerfectScore","t":8,"rt":$n[0].Int32,"fg":"PerfectScore","box":function ($v) { return Bridge.box($v, System.Int32);}},"s":{"a":1,"n":"set_PerfectScore","t":8,"p":[$n[0].Int32],"rt":$n[0].Void,"fs":"PerfectScore"},"fn":"PerfectScore"},{"a":2,"n":"TotalScore","t":16,"rt":$n[0].Int32,"g":{"a":2,"n":"get_TotalScore","t":8,"rt":$n[0].Int32,"fg":"TotalScore","box":function ($v) { return Bridge.box($v, System.Int32);}},"fn":"TotalScore"},{"a":1,"n":"PERFECT_DUNK_NOTIFICATION","is":true,"t":4,"rt":$n[0].String,"sn":"PERFECT_DUNK_NOTIFICATION"},{"at":[new UnityEngine.HeaderAttribute("Dunk Point Values")],"a":2,"n":"normalDunkPoints","t":4,"rt":$n[0].Int32,"sn":"normalDunkPoints","box":function ($v) { return Bridge.box($v, System.Int32);}},{"a":2,"n":"normalScoreText","t":4,"rt":$n[3].TextMeshPro,"sn":"normalScoreText"},{"a":2,"n":"perfectDunkAnimation","t":4,"rt":$n[1].Animation,"sn":"perfectDunkAnimation"},{"a":2,"n":"perfectDunkParticle","t":4,"rt":$n[1].ParticleSystem,"sn":"perfectDunkParticle"},{"a":2,"n":"perfectDunkPoints","t":4,"rt":$n[0].Int32,"sn":"perfectDunkPoints","box":function ($v) { return Bridge.box($v, System.Int32);}},{"a":2,"n":"perfectScoreText","t":4,"rt":$n[3].TextMeshPro,"sn":"perfectScoreText"},{"a":2,"n":"totalScoreText","t":4,"rt":$n[3].TextMeshPro,"sn":"totalScoreText"},{"a":2,"n":"OnTotalScoreChanged","t":2,"ad":{"a":2,"n":"add_OnTotalScoreChanged","t":8,"pi":[{"n":"value","pt":Function,"ps":0}],"sn":"addOnTotalScoreChanged","rt":$n[0].Void,"p":[Function]},"r":{"a":2,"n":"remove_OnTotalScoreChanged","t":8,"pi":[{"n":"value","pt":Function,"ps":0}],"sn":"removeOnTotalScoreChanged","rt":$n[0].Void,"p":[Function]}},{"a":1,"backing":true,"n":"<Instance>k__BackingField","is":true,"t":4,"rt":ScoreManager,"sn":"Instance"},{"a":1,"backing":true,"n":"<NormalScore>k__BackingField","t":4,"rt":$n[0].Int32,"sn":"NormalScore","box":function ($v) { return Bridge.box($v, System.Int32);}},{"a":1,"backing":true,"n":"<PerfectScore>k__BackingField","t":4,"rt":$n[0].Int32,"sn":"PerfectScore","box":function ($v) { return Bridge.box($v, System.Int32);}}]}; }, $n);
     /*ScoreManager end.*/
+
+    /*UIManager start.*/
+    $m("UIManager", function () { return {"att":1048577,"a":2,"m":[{"a":2,"isSynthetic":true,"n":".ctor","t":1,"sn":"ctor"},{"a":2,"n":"HideBallSelectMenu","t":8,"sn":"HideBallSelectMenu","rt":$n[0].Void},{"a":2,"n":"ShowBallSellectMenu","t":8,"sn":"ShowBallSellectMenu","rt":$n[0].Void},{"a":2,"n":"Start","t":8,"sn":"Start","rt":$n[0].Void},{"a":2,"n":"BallSelectButton","t":4,"rt":$n[1].GameObject,"sn":"BallSelectButton"},{"a":2,"n":"BallSelectMenu","t":4,"rt":$n[1].GameObject,"sn":"BallSelectMenu"}]}; }, $n);
+    /*UIManager end.*/
 
     /*IAmAnEmptyScriptJustToMakeCodelessProjectsCompileProperty start.*/
     $m("IAmAnEmptyScriptJustToMakeCodelessProjectsCompileProperty", function () { return {"att":1048577,"a":2,"m":[{"a":2,"isSynthetic":true,"n":".ctor","t":1,"sn":"ctor"}]}; }, $n);
