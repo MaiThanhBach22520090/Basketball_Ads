@@ -1,0 +1,169 @@
+{
+    "BuildID": "348c987f-3d62-46a8-a705-0ebe26e6a0f8",
+    "Command": "project:build",
+    "ProjectID": "a2f9ded423cca9c4cb7b8871bbb451dc",
+    "ProjectStateHash": "534da8adadc1340c7efb9045faea0df927069b6b6d1d4364b2495b5179848889",
+    "StageCompletedAt": 3,
+    "EarliestFatalError": 0,
+    "StartTime": 1754587877307,
+    "EndTime": 1754587907180,
+    "PlaygroundUserID": 26530,
+    "OperatingSystem": "win32",
+    "UnityPackageID": null,
+    "TargetPlatform": "develop",
+    "UnityVersion": "2021.3.45f1",
+    "LunaVersion": "6.3.0",
+    "LogCount": 6,
+    "Logs": [
+        {
+            "LogID": "102ef083-c603-4d7e-b104-cda45551ec1b",
+            "Order": 3,
+            "Timestamp": 1754587907340,
+            "Stage": 3,
+            "ErrorType": 1,
+            "ErrorCode": "LP3006",
+            "Description": "You are not using the Luna API: Playable.InstallFullGame",
+            "Details": [
+                "You are not using the Luna API: Playable.InstallFullGame. Some ad networks require these calls. Please add these calls to ensure your playable works on all ad networks. Check documentation for more information."
+            ],
+            "DescriptionValues": [
+                "Playable",
+                "InstallFullGame"
+            ],
+            "DetailsValues": [
+                "Playable",
+                "InstallFullGame"
+            ],
+            "LogCount": 1,
+            "LinePosition": null,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "3d32686b-5724-472c-a648-4faeceb0b95e",
+            "Order": 3,
+            "Timestamp": 1754587907341,
+            "Stage": 3,
+            "ErrorType": 1,
+            "ErrorCode": "LP3015",
+            "Description": "You are not the Game Ended API: LifeCycle.GameEnded",
+            "Details": [
+                "You are not using the Game Ended API: LifeCycle.GameEnded. Some ad networks require this call, please add the event to avoid the ad being rejected."
+            ],
+            "DescriptionValues": [
+                "LifeCycle",
+                "GameEnded"
+            ],
+            "DetailsValues": [
+                "LifeCycle",
+                "GameEnded"
+            ],
+            "LogCount": 1,
+            "LinePosition": null,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "d4095f75-b2e9-486e-bd6f-3cff1a8bbf50",
+            "Order": 3,
+            "Timestamp": 1754587907341,
+            "Stage": 3,
+            "ErrorType": 3,
+            "ErrorCode": "LP3007",
+            "Description": "You are not using any custom events",
+            "Details": [
+                "You are not using any custom events. It is recommended to use custom events to have a better understanding of the playable."
+            ],
+            "DescriptionValues": [
+                ""
+            ],
+            "DetailsValues": [
+                ""
+            ],
+            "LogCount": 1,
+            "LinePosition": null,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "22935d4e-0413-49c3-9b30-a07b7d405eca",
+            "Order": 3,
+            "Timestamp": 1754587907342,
+            "Stage": 3,
+            "ErrorType": 3,
+            "ErrorCode": "LP3011",
+            "Description": "You are not using any LunaPlaygroundFields attributes.",
+            "Details": [
+                "You are not using any LunaPlaygroundFields attributes, it allows you to configure your playable to different concepts to find the best variation, which can drastically improve playable performance on all ad networks."
+            ],
+            "DescriptionValues": null,
+            "DetailsValues": null,
+            "LogCount": 1,
+            "LinePosition": null,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "606f95cc-074b-424c-8fa1-832c9005bca6",
+            "Order": 0,
+            "Timestamp": 1754587886558,
+            "Stage": 1,
+            "ErrorType": 3,
+            "ErrorCode": "LP1002",
+            "Description": "Repeat wrap mode used on a texture with non power-of-two dimensions, this might not be rendered correctly.",
+            "Details": [
+                "Repeat wrap mode used on 'LiberationSans SDF Atlas' texture at 'Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset' with non power-of-two dimensions, this might not be rendered correctly."
+            ],
+            "DescriptionValues": [],
+            "DetailsValues": [
+                "LiberationSans SDF Atlas",
+                "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset"
+            ],
+            "LogCount": 1,
+            "LinePosition": 0,
+            "FilePath": "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        },
+        {
+            "LogID": "99dd7136-f8f9-4c9e-818e-214a249a4790",
+            "Order": 1,
+            "Timestamp": 1754587886558,
+            "Stage": 1,
+            "ErrorType": 2,
+            "ErrorCode": "LP1010",
+            "Description": "Looks like a collider was scaled, this might affect performance.",
+            "Details": [
+                "dunkTriggerBottom",
+                "dunkTriggerTop",
+                "CubeBottom",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube",
+                "Cube"
+            ],
+            "DescriptionValues": [],
+            "DetailsValues": [],
+            "LogCount": 12,
+            "LinePosition": 0,
+            "FilePath": "",
+            "ClassName": "",
+            "MemberName": "",
+            "Severity": 0
+        }
+    ]
+}

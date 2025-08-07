@@ -3,7 +3,11 @@
   "groups": [
     [
       "C:/Users/Bakaarona/Documents/GitHub/Basketball_Ads/LunaTemp/stage3/processed-scripts/Assets/Scripts/Ball.cs",
-      "C:/Users/Bakaarona/Documents/GitHub/Basketball_Ads/LunaTemp/stage3/processed-scripts/Assets/Scripts/BasketballThrower.cs"
+      "C:/Users/Bakaarona/Documents/GitHub/Basketball_Ads/LunaTemp/stage3/processed-scripts/Assets/Scripts/BasketballThrower.cs",
+      "C:/Users/Bakaarona/Documents/GitHub/Basketball_Ads/LunaTemp/stage3/processed-scripts/Assets/Scripts/DunkTrigger.cs",
+      "C:/Users/Bakaarona/Documents/GitHub/Basketball_Ads/LunaTemp/stage3/processed-scripts/Assets/Scripts/Floor.cs",
+      "C:/Users/Bakaarona/Documents/GitHub/Basketball_Ads/LunaTemp/stage3/processed-scripts/Assets/Scripts/Ring.cs",
+      "C:/Users/Bakaarona/Documents/GitHub/Basketball_Ads/LunaTemp/stage3/processed-scripts/Assets/Scripts/ScoreManager.cs"
     ],
     [
       "C:/Users/Bakaarona/Downloads/6.3.0/pipeline/templates/LunaCompiler/Scripts/Properties/AssemblyInfo.cs"
